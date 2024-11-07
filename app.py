@@ -1,5 +1,4 @@
 #%%
-
 # O(1)
 
 def worker(arr, index):
