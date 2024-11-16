@@ -43,8 +43,6 @@ if result != -1:
 else:
     print(f"عنصر {target} پیدا نشد.")
 
-# %%
-
 # O(nlog(n))
 
 def merge_sort(arr):
