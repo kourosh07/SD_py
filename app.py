@@ -82,7 +82,6 @@ merge_sort(arr)
 print("آرایه بعد از مرتب‌سازی:", arr)
 
 ################################################################
-# %%
 class Stack:
     def __init__(self, limit=100):
         self.Stack=[]
