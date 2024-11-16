@@ -7,8 +7,6 @@ arr = [1, 2, 3, 4, 5]
 index = 2
 print(worker(arr, index))  
 
-# %%
-
 # O(n)
 
 def sum(arr):
