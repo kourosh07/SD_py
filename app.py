@@ -1281,63 +1281,150 @@ class BinaryTree:
 
 # کلاس جستجوی درخت باینری
 
-class BinaryNode:
-    def __init__(self, data):
-        self.data = data
+class bnode:
+    def __init__(self,d):
         self.Lchild = None
+        self.data = d
         self.Rchild = None
 
-class BST:
+class btree:
     def __init__(self):
         self.root = None
-        self.l = list()
-        
-    def insert(self, data):
-        self.l.append(data)
-        if self.root is None:
-            self.root = BinaryNode(data)
-        else:
-            return self.recins(self.root, data)
 
-    def recins(self, root, data):
-        if data > root.data:
-            if root.Rchild is None:
-                root.Rchild  = BinaryNode(data)
-            else:
-                self.recins(root.Rchild, data)
+    def insLeft(self,d):
+        if self.root is None:  #شرط خالی بودن
+            self.root = bnode(d) #در نظر گرفتن به عنوان ریشه در صورت خالی بودن
         else:
-            if root.Lchild is None:
-                root.Lchild = BinaryNode(data)
-            else:
-                self.recins(root.Lchild, data)
-                
-    def show_list(self):
-        print(self.l)
-        return(self.l)
-    
-    def search(self, data):
-        return self.inorder(self.root, data)
-    
-    def inorder(self, root, data):
-        if root is None:
-            return -1
-        elif root.data == data:
-            return root
-        else:
-            if data > root.data:
-                return self.inorder(root.Rchild)
-            return self.inorder(root.Lchild)
+            temp = self.root # کپی از ریشه
+            while temp.Lchild: #حرکت تا چپ ترین خانه
+                temp = temp.Lchild
+            temp.Lchild = bnode(d) # اضافه کردن فرزند چپ به چپ ترین خانه
 
-    def display(self):
-        return self.postorder(self, self.root)
-    
-    def postorder(self, root):
-        if root is None:
-            return None
+    def insRight(self,d):
+        if self.root: #شرط خالی نبودن
+            temp = self.root
+            while temp.Rchild: #حرکت تا راست ترین خانه
+                temp = temp.Rchild
+            temp.Rchild = bnode(d) # اضافه کردن فرزند راست به راست ترین خانه
         else:
-            self.postorder(root.Lchild)
-            self.postorder(root.Rchild)
-            print(root.data, end=' ')
+            self.root = bnode(d) #در نظر گرفتن به عنوان ریشه در صورت خالی بودن
+
+    def displayNLR(self): # Node-Left-Right نمایش با ترتیب
+        self.showNLR(self.root) #صدا زدن متد کمکی
+    def showNLR(self,root):
+        if root: #شرط خالی نبودن
+            print(root.data,end=" ") #چاپ ریشه
+
+            self.showLNR(root.Lchild) #تابع بازگشتی با در نظر گرفتن 
+                                      #فرزند چپ به عنوان ریشه
+
+            self.showLNR(root.Rchild) #تابع بازگشتی با در نظر گرفتن 
+                                      #فرزند راست به عنوان ریشه
+
+
+    def displayLNR(self): #Left-Node-Right نمایش با ترتیب
+        self.showLNR(self.root) #صدا زدن متد کمکی
+    def showLNR(self,root): #متد کمکی
+        if root: #شرط خالی نبودن
+            self.showLNR(root.Lchild) #تابع بازگشتی با در نظر گرفتن 
+                                      #فرزند چپ به عنوان ریشه
+
+            print(root.data,end=" ") #چاپ ریشه
+
+            self.showLNR(root.Rchild) #تابع بازگشتی با در نظر گرفتن 
+                                      #فرزند راست به عنوان ریشه
+
+
+    def displayLRN(self): #Left-Right_Node نمایش با ترتیب
+        self.showLRN(self.root) #صدا زدن متد کمکی
+    def showLRN(self,node): #متد کمکی
+        if node: #شرط خالی نبودن
+            self.showLRN(node.Lchild) #تابع بازگشتی با در نظر گرفتن 
+                                      #فرزند چپ به عنوان ریشه
+
+            self.showLRN(node.Rchild) #تابع بازگشتی با در نظر گرفتن 
+                                      #فرزند راست به عنوان ریشه
+            print(node.data,end = ' ') #چاپ ریشه
+
+    def levelOrder(self): #Level نمایش با ترتیب
+        list = [] # ایجاد لیست
+        temp = self.root # کپی از ریشه
+        if temp is None: # شرط خالی بودن
+            return
+        list.append(temp) #اضافه کردن ریشه به لیست
+        while list: #شرط خالی نبودن لیست
+            k = list.pop(0) #برداشتن اولین ایتم لیست
+            print(k.data,end = ' ') #چاپ ایتم
+            
+            if k.Lchild: #شرط وجود داشتن فرزند چپ
+                list.append(k.Lchild) #اضافه کردن فرزند چپ به لیست
+            if k.Rchild: #شرط وجود داشتن فرزند راست
+                list.append(k.Rchild) #اضافه کردن فرزند راست به لیست
+
+
+    def insAfterL(self,x,d): #افزودن فرزند چپ به نود مورد نظر
+        self.pinsAfterL(self.root,x,d) # صدا زدن متد کمکی
+    def pinsAfterL(self,node,x,d): #متد کمکی
+        if node: #شرط خالی نبودن
+            if node.data == x: #تطابق نود فعلی با نود مورد نظر
+                temp = node.Lchild #کپی از فرزند چپ فعلی
+                node.Lchild = bnode(d) #قرار دادن داده جدید به عنوان فرزند چپ جدید
+                node.Lchild.Lchild = temp # قرار دادن فرزند چپ قبلی به عنوان نوه چپ
+            self.pinsAfterL(node.Lchild,x,d) #جستجوی در فرزند های چپ برای رسیدن به نود مورد نظر
+            self.pinsAfterL(node.Rchild,x,d) #جستجوی در فرزند های راست برای رسیدن به نود مورد نظر
+
+    def insAfterR(self,x,d): #افزودن فرزند راست  به نود مورد نظر
+        self.pinsAfterR(self.root,x,d) # صدا زدن متد کمکی
+    def pinsAfterR(self,node,x,d): #متد کمکی
+        if node: #شرط خالی نبودن
+            if node.data == x: #تطابق نود فعلی با نود مورد نظر
+                temp = node.Rchild #کپی از فرزند راست  فعلی
+                node.Rchild = bnode(d) #قرار دادن داده جدید به عنوان فرزند راست  جدید
+                node.Rchild.Rchild = temp # قرار دادن فرزند راست قبلی به عنوان نوه راست
+            self.pinsAfterR(node.Rchild,x,d) #جستجوی در فرزند های راست  برای رسیدن به نود مورد نظر
+            self.pinsAfterR(node.Lchild,x,d) #جستجوی در فرزند های راست برای رسیدن به نود مورد نظر
+
+
+
+    def delLeft(self): #حذف چپ ترین نود
+        if self.root is None: #شرط خالی بودن
+            return print("empty")
+        if self.root.Lchild is None: #شرط عدم وجود فرزند چپ
+            temp = self.root.Rchild # کپی از فرزند راست
+            del self.root #حذف ریشه
+            self.root = temp #قرار دادن فرزند راست به عنوان ریشه جدید
+            return
+        temp = self.root #کپی از ریشه
+        while temp.Lchild.Lchild: #حرکت تا یک خانه قبل از چپ ترین نود
+            temp = temp.Lchild
+        temp1 = temp.Lchild #کپی از چپ ترین نود
+        temp.Lchild = None #حذف چپ ترین نود
+        del temp1
+
+    def delRight(self): #حذف راست ترین نود
+        if self.root is None: #شرط خالی بودن
+            return print("empty")
+        if self.root.Rchild is None: #شرط عدم وجود فرزند راست 
+            temp = self.root.Lchild # کپی از فرزند چپ
+            del self.root #حذف ریشه
+            self.root = temp #قرار دادن فرزند راست به عنوان ریشه جدید
+            return
+        temp = self.root #کپی از ریشه
+        while temp.Rchild.Rchild: #حرکت تا یک خانه قبل از راست ترین نود
+            temp = temp.Rchild
+        temp1 = temp.Rchild #کپی از راست ترین نود
+        temp.Rchild = None #حذف راست ترین نود
+        del temp1
+
+    def delete(self,x): #حذف کل درخت
+        self.predel(self.root , x) #صدا زدن متد کمکی
+    def predel(self,node,x):
+        if node is None: #شرط خالی بودن
+            return
+        if node.data == x: #تطابق داده با ریشه
+            self.root = None #حذف ریشه
+            del node
+            return
 
 ################################################################################################################################################
 
