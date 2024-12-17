@@ -1441,116 +1441,108 @@ class MinHeap:
 # کلاس گراف
 
 class Graph:
-    def __init__(self, vertices):
-        self.vertices = vertices
-        self.adj_matrix = [[0] * vertices for _ in range(vertices)]
+    def __init__(self, n):
+        self.M = [[0] * n for _ in range(n)]  # ایجاد ماتریس n*n برای نگهداری گراف
 
-    def add_edge(self, u, v):
-        if 0 <= u < self.vertices and 0 <= v < self.vertices:
-            self.adj_matrix[u][v] = 1
-            self.adj_matrix[v][u] = 1
-        else:
-            print("Vertex index out of bounds")
-            return None
+    def insertEdge(self, s, t):
+        """افزودن یال به گراف غیر جهت دار."""
+        if s < len(self.M[0]) and t < len(self.M[0]):  # بررسی اینکه ایندکس‌ها معتبر هستند
+            self.M[s][t] = 1  # ایجاد یال از گره s به گره t
+            self.M[t][s] = 1  # گراف غیرجهت‌دار: ایجاد یال از گره t به گره s
+
+    def delEdge(self, s, t):
+        """حذف یال از گراف غیر جهت دار."""
+        if s < len(self.M[0]) and t < len(self.M[0]):  # بررسی اینکه ایندکس‌ها معتبر هستند
+            self.M[s][t] = 0  # حذف یال از گره s به گره t
+            self.M[t][s] = 0  # حذف یال از گره t به گره s
+
+    def countEdge(self):
+        """شمارش تعداد یال‌ها در گراف."""
+        c = 0  # شمارنده تعداد یال‌ها
+        for i in range(len(self.M[0])):  # بررسی هر گره
+            c = sum(self.M[i]) + c  # جمع کردن یال‌های مربوط به گره‌ها
+        c = c / 2  # چون گراف غیر جهت‌دار است، باید تعداد یال‌ها را نصف کنیم
+        if c / 2 != 0:
+            c += 0.5  # اطمینان از تعداد صحیح یال‌ها در صورت نیاز
+        print(c)  # نمایش تعداد یال‌ها
 
     def bfs(self, start):
-        if (0 <= start < self.vertices):
-            visited = [False] * self.vertices
-            queue = Cqueue()
-            queue.insert_queue(start)
-            bfs_order = []
-            visited[start] = True
-            while queue.front!=-1:
-                current = queue.delete_queue()
-                bfs_order.append(current)
-                for neighbor in range(self.vertices):
-                    if self.adj_matrix[current][neighbor] == 1 and not visited[neighbor]:
-                        visited[neighbor] = True
-                        queue.insert_queue(neighbor)
-            print(f"BFS starting from vertex {start}: ", end='')
-            return bfs_order
+        """جستجوی عرضی (BFS) در گراف از راس شروع."""
+        visited = [False] * len(self.M)  # لیستی برای نشان دادن بازدید شدن گره‌ها
+        queue = [start]  # صف برای ذخیره گره‌ها در طی جستجو
+        visited[start] = True  # علامت‌گذاری گره شروع به عنوان بازدید شده
+        print("مسیر BFS:", end=" ")  # نمایش عنوان مسیر
+        while queue:  # تا زمانی که صف خالی نباشد
+            node = queue.pop(0)  # گره اول صف را بردار
+            print(node, end=" ")  # نمایش گره فعلی
+            for i in range(len(self.M[node])):  # بررسی تمام گره‌های متصل به گره فعلی
+                if self.M[node][i] == 1 and not visited[i]:  # اگر یالی بین گره‌ها باشد و گره هنوز بازدید نشده باشد
+                    queue.append(i)  # افزودن گره به صف
+                    visited[i] = True  # علامت‌گذاری گره به عنوان بازدید شده
+        print()  # خط جدید پس از اتمام جستجو
 
     def dfs(self, start):
-        if (0 <= start < self.vertices):
-            visited = [False] * self.vertices
-            stack = Stack()
-            stack.push(start)
-            dfs_order = []
-            while not (stack.is_empty()):
-                current = stack.pop()
-                if not visited[current]:
-                    visited[current] = True
-                    dfs_order.append(current)
-                    # Push neighbors to the stack in reverse order to maintain order
-                    for neighbor in range(self.vertices - 1, -1, -1):
-                        if self.adj_matrix[current][neighbor] == 1 and not visited[neighbor]:
-                            stack.push(neighbor)
-            print(f"DFS starting from vertex {start}: ", end='')
-            return dfs_order
+        """جستجوی عمقی (DFS) در گراف از راس شروع."""
+        print(start, end=" ")  # نمایش گره فعلی
+        # تغییر مقدار گره به 2 برای نشان دادن اینکه بازدید شده
+        self.M[start][start] = 2
+        for i in range(len(self.M[start])):  # بررسی تمام گره‌های متصل به گره فعلی
+            if self.M[start][i] == 1 and self.M[i][i] != 2:  # اگر یالی بین گره‌ها باشد و گره هنوز بازدید نشده باشد
+                self.dfs(i)  # فراخوانی تابع DFS برای گره بعدی
 
     def display(self):
-        print("Adjacency matrix: ")
-        for row in self.adj_matrix:
-            print(" ".join(map(str, row)))
+        """نمایش گراف به صورت ماتریس adjacency."""
+        print("ماتریس گراف غیر جهت دار:")
+        for row in self.M:
+            print(row)
 
 ################################################################################################################################################
 
 # کلاس گراف جهت دار
 
-class DGraph:
-    def __init__(self, vertices):
-        self.vertices = vertices
-        self.adj_matrix = [[0] * vertices for _ in range(vertices)]
+class GraphD:  # گراف جهت دار
+    def __init__(self, n):
+        self.M = [[0] * n for _ in range(n)]  # ایجاد ماتریس n*n برای نگهداری گراف جهت دار
 
-    def add_edge(self, u, v):
-        if 0 <= u < self.vertices and 0 <= v < self.vertices:
-            self.adj_matrix[u][v] = 1
-        else:
-            raise ValueError("Vertex index out of bounds")
+    def insertEdge(self, s, t):
+        """افزودن یال به گراف جهت دار."""
+        if s < len(self.M[0]) and t < len(self.M[0]):  # بررسی اینکه ایندکس‌ها معتبر هستند
+            self.M[s][t] = 1  # ایجاد یال از گره s به گره t
 
-    def remove_edge(self, u, v):
-        if 0 <= u < self.vertices and 0 <= v < self.vertices:
-            self.adj_matrix[u][v] = 0
-        else:
-            raise ValueError("Vertex index out of bounds")
+    def delEdge(self, s, t):
+        """حذف یال از گراف جهت دار."""
+        if s < len(self.M[0]) and t < len(self.M[0]):  # بررسی اینکه ایندکس‌ها معتبر هستند
+            self.M[s][t] = 0  # حذف یال از گره s به گره t
 
     def bfs(self, start):
-        if not (0 <= start < self.vertices):
-            raise ValueError("Start vertex index out of bounds")
-        visited = [False] * self.vertices
-        queue = [start]
-        bfs_order = []
-        visited[start] = True
-        while queue:
-            current = queue.pop(0)
-            bfs_order.append(current)
-            for neighbor in range(self.vertices):
-                if self.adj_matrix[current][neighbor] != 0 and not visited[neighbor]:
-                    visited[neighbor] = True
-                    queue.append(neighbor)
-        return bfs_order
+        """جستجوی عرضی (BFS) در گراف جهت دار."""
+        visited = [False] * len(self.M)  # لیستی برای نشان دادن بازدید شدن گره‌ها
+        queue = [start]  # صف برای ذخیره گره‌ها در طی جستجو
+        visited[start] = True  # علامت‌گذاری گره شروع به عنوان بازدید شده
+        print("مسیر BFS:", end=" ")  # نمایش عنوان مسیر
+        while queue:  # تا زمانی که صف خالی نباشد
+            node = queue.pop(0)  # گره اول صف را بردار
+            print(node, end=" ")  # نمایش گره فعلی
+            for i in range(len(self.M[node])):  # بررسی تمام گره‌های متصل به گره فعلی
+                if self.M[node][i] == 1 and not visited[i]:  # اگر یالی بین گره‌ها باشد و گره هنوز بازدید نشده باشد
+                    queue.append(i)  # افزودن گره به صف
+                    visited[i] = True  # علامت‌گذاری گره به عنوان بازدید شده
+        print()  # خط جدید پس از اتمام جستجو
 
     def dfs(self, start):
-        if not (0 <= start < self.vertices):
-            raise ValueError("Start vertex index out of bounds")
-        visited = [False] * self.vertices
-        stack = [start]
-        dfs_order = []
-
-        while stack:
-            current = stack.pop()
-            if not visited[current]:
-                visited[current] = True
-                dfs_order.append(current)
-                # Push neighbors to the stack in reverse order to maintain order
-                for neighbor in range(self.vertices - 1, -1, -1):
-                    if self.adj_matrix[current][neighbor] != 0 and not visited[neighbor]:
-                        stack.append(neighbor)
-        return dfs_order
+        """جستجوی عمقی (DFS) در گراف جهت دار."""
+        print(start, end=" ")  # نمایش گره فعلی
+        # تغییر مقدار گره به 2 برای نشان دادن اینکه بازدید شده
+        self.M[start][start] = 2
+        for i in range(len(self.M[start])):  # بررسی تمام گره‌های متصل به گره فعلی
+            if self.M[start][i] == 1 and self.M[i][i] != 2:  # اگر یالی بین گره‌ها باشد و گره هنوز بازدید نشده باشد
+                self.dfs(i)  # فراخوانی تابع DFS برای گره بعدی
 
     def display(self):
-        for row in self.adj_matrix:
-            print(" ".join(map(str, row)))
+        """نمایش گراف به صورت ماتریس adjacency."""
+        print("ماتریس گراف جهت دار:")
+        for row in self.M:
+            print(row)
 
 ################################################################################################################################################
 
@@ -1576,38 +1568,50 @@ class WGraph:
 
 # کلاس گراف جهت دار و وزن دار
 
-class WDGraph:
-    def __init__(self, vertices):
-        self.vertices = vertices
-        self.adjacency_matrix = [[0] * vertices for _ in range(vertices)]
+class GraphW:  # گراف وزن دار
+    def __init__(self, n):
+        self.M = [[0] * n for _ in range(n)]  # ایجاد ماتریس n*n برای نگهداری گراف وزن دار
 
-    def add_edge(self, s, t, weight):
-        if 0 <= s < self.vertices and 0 <= t < self.vertices:
-            self.adjacency_matrix[s][t] = weight
-        else:
-            print("Vertex index out of bounds.")
-            return None
+    def insertEdge(self, s, t, w):
+        """افزودن یال وزن دار به گراف."""
+        if s < len(self.M[0]) and t < len(self.M[0]):  # بررسی اینکه ایندکس‌ها معتبر هستند
+            self.M[s][t] = w  # قرار دادن وزن یال در خانه مربوطه
 
-    def remove_edge(self, s, t):
-        if 0 <= s < self.vertices and 0 <= t < self.vertices:
-            self.adjacency_matrix[s][t] = 0
-        else:
-            print("Vertex index out of bounds.")
-            return None
+    def delEdge(self, s, t):
+        """حذف یال از گراف وزن دار."""
+        if s < len(self.M[0]) and t < len(self.M[0]):  # بررسی اینکه ایندکس‌ها معتبر هستند
+            self.M[s][t] = 0  # حذف یال از گره s به گره t
+            self.M[t][s] = 0  # حذف یال از گره t به گره s (برای گراف غیرجهت‌دار)
 
-    def get_weight(self, s, t):
-        if 0 <= s < self.vertices and 0 <= t < self.vertices:
-            return self.adjacency_matrix[s][t]
-        else:
-            print("Vertex index out of bounds.")
-            return None
+    def bfs(self, start):
+        """جستجوی عرضی (BFS) در گراف وزن دار."""
+        visited = [False] * len(self.M)  # لیستی برای نشان دادن بازدید شدن گره‌ها
+        queue = [start]  # صف برای ذخیره گره‌ها در طی جستجو
+        visited[start] = True  # علامت‌گذاری گره شروع به عنوان بازدید شده
+        print("مسیر BFS:", end=" ")  # نمایش عنوان مسیر
+        while queue:  # تا زمانی که صف خالی نباشد
+            node = queue.pop(0)  # گره اول صف را بردار
+            print(node, end=" ")  # نمایش گره فعلی
+            for i in range(len(self.M[node])):  # بررسی تمام گره‌های متصل به گره فعلی
+                if self.M[node][i] > 0 and not visited[i]:  # اگر وزن یال مثبت باشد و گره هنوز بازدید نشده باشد
+                    queue.append(i)  # افزودن گره به صف
+                    visited[i] = True  # علامت‌گذاری گره به عنوان بازدید شده
+        print()  # خط جدید پس از اتمام جستجو
 
-    def display_graph(self):
-        print("Adjacency matrix: ")
-        for row in self.adjacency_matrix:
-            for column in row:
-                print(f"{column:^3}", end=' ')
-            print()
+    def dfs(self, start):
+        """جستجوی عمقی (DFS) در گراف وزن دار."""
+        print(start, end=" ")  # نمایش گره فعلی
+        # تغییر مقدار گره به 2 برای نشان دادن اینکه بازدید شده
+        self.M[start][start] = 2
+        for i in range(len(self.M[start])):  # بررسی تمام گره‌های متصل به گره فعلی
+            if self.M[start][i] > 0 and self.M[i][i] != 2:  # اگر وزن یال مثبت باشد و گره هنوز بازدید نشده باشد
+                self.dfs(i)  # فراخوانی تابع DFS برای گره بعدی
+
+    def display(self):
+        """نمایش گراف به صورت ماتریس adjacency (وزن‌دار)."""
+        print("ماتریس گراف وزن دار:")
+        for row in self.M:
+            print(row)
 
 ################################################################################################################################################
 
