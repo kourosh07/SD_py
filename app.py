@@ -1597,7 +1597,7 @@ class GraphW:  # گراف وزن دار
 
 # کلاس گراف جهت دار و وزن دار
 
-class GraphW:  # گراف وزن دار
+class GraphDW:  
     def __init__(self, n):
         # ایجاد ماتریس adjacency برای گراف جهت‌دار و وزن‌دار با ابعاد n*n
         self.M = [[0] * n for _ in range(n)]
@@ -1648,199 +1648,178 @@ class GraphW:  # گراف وزن دار
 
 # کلاس گراف جهت دار با لیست های مجاورت حلقوی
 
-class Node:
-    def __init__(self, vertex):
-        self.vertex = vertex  # Destination vertex of the edge
-        self.next = None  # Pointer to the next node
+class GraphD:
+    def __init__(self, n):
+        """ایجاد گراف با n گره و لیست‌های مجاورت حلقوی."""
+        self.n = n  # تعداد گره‌ها
+        # لیست مجاورت برای هر گره (لیست‌های حلقوی)
+        self.adj_list = [[] for _ in range(n)]
+    
+    def insertEdge(self, s, t, w=1):
+        """افزودن یال از گره s به گره t با وزن w به گراف جهت‌دار."""
+        if 0 <= s < self.n and 0 <= t < self.n:  # بررسی اینکه گره‌ها در محدوده باشند
+            self.adj_list[s].append((t, w))  # افزودن یال از گره s به گره t با وزن w
+    
+    def delEdge(self, s, t):
+        """حذف یال از گره s به گره t از گراف جهت‌دار."""
+        if 0 <= s < self.n and 0 <= t < self.n:  # بررسی اینکه گره‌ها در محدوده باشند
+            # حذف یال از لیست مجاورت گره s که به گره t اشاره می‌کند
+            self.adj_list[s] = [x for x in self.adj_list[s] if x[0] != t]
 
-class Vertex:
-    def __init__(self, vertex):
-        self.vertex = vertex  # The vertex id
-        self.adj_list = None  # Circular linked list of outgoing edges
+    def bfs(self, start):
+        """جستجوی عرضی (BFS) از گره start."""
+        visited = [False] * self.n  # آرایه visited برای پیگیری گره‌های بازدید شده
+        queue = [start]  # صف برای مدیریت گره‌ها
+        visited[start] = True  # علامت‌گذاری گره شروع به عنوان بازدید شده
+        print("مسیر BFS:", end=" ")
 
-class DirectedGraph:
-    def __init__(self, num_vertices):
-        self.num_vertices = num_vertices
-        self.vertices = [Vertex(i) for i in range(num_vertices)]  # Create vertices
+        # اجرای الگوریتم BFS
+        while queue:
+            node = queue.pop(0)  # خارج کردن گره اول صف
+            print(node, end=" ")  # نمایش گره فعلی
+            # بررسی همسایگان گره و افزودن آنها به صف
+            for neighbor, weight in self.adj_list[node]:
+                if not visited[neighbor]:  # اگر گره همسایه بازدید نشده باشد
+                    visited[neighbor] = True  # علامت‌گذاری به عنوان بازدید شده
+                    queue.append(neighbor)  # افزودن گره همسایه به صف
+        print()  # برای چاپ در خط جدید
 
-    def add_edge(self, from_vertex, to_vertex):
-        if 0 <= from_vertex < self.num_vertices and 0 <= to_vertex < self.num_vertices:
-            new_node = Node(to_vertex)
+    def dfs(self, start, visited=None):
+        """جستجوی عمقی (DFS) از گره start."""
+        if visited is None:
+            visited = [False] * self.n  # آرایه visited برای پیگیری گره‌های بازدید شده
+        visited[start] = True  # علامت‌گذاری گره شروع به عنوان بازدید شده
+        print(start, end=" ")  # نمایش گره فعلی
 
-            # Get the adjacency list of the from_vertex
-            from_vertex_node = self.vertices[from_vertex]
+        # بررسی همسایگان گره و بازگشت به آنها در صورت بازدید نشدن
+        for neighbor, weight in self.adj_list[start]:
+            if not visited[neighbor]:  # اگر گره همسایه بازدید نشده باشد
+                self.dfs(neighbor, visited)  # فراخوانی بازگشتی برای گره همسایه
 
-            # If adjacency list is empty, set the node to point to itself (circular)
-            if not from_vertex_node.adj_list:
-                from_vertex_node.adj_list = new_node
-                new_node.next = new_node  # Circular link to itself
-            else:
-                # Otherwise, add the new node to the circular linked list
-                current = from_vertex_node.adj_list
-                while current.next != from_vertex_node.adj_list:
-                    current = current.next
-                current.next = new_node
-                new_node.next = from_vertex_node.adj_list
-        else:
-            print("Vertex index out of bounds.")
-
-    def remove_edge(self, from_vertex, to_vertex):
-        """Remove the directed edge from `from_vertex` to `to_vertex`."""
-        if 0 <= from_vertex < self.num_vertices and 0 <= to_vertex < self.num_vertices:
-            from_vertex_node = self.vertices[from_vertex]
-
-            if not from_vertex_node.adj_list:
-                print(f"No edges from vertex {from_vertex}.")
-                return
-            current = from_vertex_node.adj_list
-            previous = None
-            while True:
-                if current.vertex == to_vertex:
-                    if previous:
-                        previous.next = current.next
-                    else:
-                        # Special case: removing the first node
-                        if current.next == from_vertex_node.adj_list:
-                            from_vertex_node.adj_list = None  # No more edges
-                        else:
-                            # Find the last node to update the circular link
-                            temp = from_vertex_node.adj_list
-                            while temp.next != from_vertex_node.adj_list:
-                                temp = temp.next
-                            temp.next = current.next
-                            from_vertex_node.adj_list = current.next
-                    print(f"Edge from {from_vertex} to {to_vertex} removed.")
-                    return
-                previous = current
-                current = current.next
-                if current == from_vertex_node.adj_list:
-                    break
-            print(f"Edge from {from_vertex} to {to_vertex} not found.")
-        else:
-            print("Vertex index out of bounds.")
-
-    def display_graph(self):
-        for vertex in self.vertices:
-            print(f"Vertex {vertex.vertex}:", end=" ")
-            if vertex.adj_list:
-                current = vertex.adj_list
-                while True:
-                    print(f"{current.vertex}", end=" -> ")
-                    current = current.next
-                    if current == vertex.adj_list:
-                        break
-                print("Back to start")
-            else:
-                print("No edges.")
+    def display(self):
+        """نمایش گراف به صورت لیست‌های مجاورت حلقوی."""
+        print("لیست‌های مجاورت حلقوی گراف:")
+        # نمایش لیست مجاورت برای هر گره
+        for i in range(self.n):
+            # لیست همسایگان هر گره به همراه وزن یال‌ها
+            neighbors = [f"{neighbor} (وزن: {weight})" for neighbor, weight in self.adj_list[i]]
+            # چاپ گره و همسایگانش
+            print(f"گره {i}: {', '.join(neighbors) if neighbors else 'هیچ یالی ندارد'}")
+            
 
 ################################################################################################################################################
 
 # کلاس گراف جهت دار و وزن دار با لیست های پیوندی حلقوی
 
 class Node:
-    def __init__(self, vertex, weight=0):
-        self.vertex = vertex  # Destination vertex
-        self.weight = weight  # Edge weight
-        self.next = None  
+    def __init__(self, data, weight):
+        """ایجاد یک گره جدید با داده و وزن مشخص."""
+        self.data = data  # داده (گره همسایه)
+        self.weight = weight  # وزن یال
+        self.next = None  # پیوند به گره بعدی (که در ابتدا None است)
 
-class Vertex:
-    def __init__(self, vertex):
-        self.vertex = vertex  # The vertex id
-        self.adj_list = None  # Circular linked list of edges
+class GraphDW:
+    def __init__(self, n):
+        """ایجاد گراف جهت‌دار و وزن‌دار با n گره و لیست‌های پیوندی حلقوی."""
+        self.n = n  # تعداد گره‌ها
+        self.adj_list = [None] * n  # لیست پیوندی برای هر گره (لیست حلقوی)
 
-class WeightedDirectedGraph:
-    def __init__(self, num_vertices):
-        self.num_vertices = num_vertices
-        self.vertices = [Vertex(i) for i in range(num_vertices)]
-
-    def add_edge(self, from_vertex, to_vertex, weight):
-        if 0 <= from_vertex < self.num_vertices and 0 <= to_vertex < self.num_vertices:
-            new_node = Node(to_vertex, weight)
-            
-            # Add the new node to the adjacency list of the from_vertex
-            from_vertex_node = self.vertices[from_vertex]
-            
-            # If adjacency list is empty, set the node to point to itself (circular)
-            if not from_vertex_node.adj_list:
-                from_vertex_node.adj_list = new_node
-                new_node.next = new_node  # Circular link to itself
+    def insertEdge(self, s, t, w=1):
+        """افزودن یال از گره s به گره t با وزن w به گراف جهت‌دار و وزن‌دار."""
+        if 0 <= s < self.n and 0 <= t < self.n:  # بررسی اینکه گره‌ها در محدوده باشند
+            new_node = Node(t, w)  # ایجاد یک گره جدید برای همسایه t با وزن w
+            if self.adj_list[s] is None:
+                # اگر گره s لیست همسایگان ندارد، گره جدید به لیست اضافه می‌شود
+                self.adj_list[s] = new_node
+                new_node.next = new_node  # گره جدید خود به خود اشاره کند (حلقوی)
             else:
-                # Otherwise, add the node to the circular list at the end
-                current = from_vertex_node.adj_list
-                while current.next != from_vertex_node.adj_list:
+                # در غیر این صورت، گره جدید به انتهای لیست پیوندی اضافه می‌شود
+                current = self.adj_list[s]
+                while current.next != self.adj_list[s]:  # پیدا کردن آخرین گره
                     current = current.next
                 current.next = new_node
-                new_node.next = from_vertex_node.adj_list
-        else:
-            print("Vertex index out of bounds.")
+                new_node.next = self.adj_list[s]  # پیوند حلقوی
 
-    def remove_edge(self, from_vertex, to_vertex):
-        if 0 <= from_vertex < self.num_vertices and 0 <= to_vertex < self.num_vertices:
-            from_vertex_node = self.vertices[from_vertex]
-            
-            if not from_vertex_node.adj_list:
-                print(f"No edges from vertex {from_vertex}.")
-                return
-            current = from_vertex_node.adj_list
-            previous = None
-            
-            # Traverse the circular linked list to find the edge
-            while True:
-                if current.vertex == to_vertex:
-                    if previous:
-                        previous.next = current.next
-                    else:
-                        # Special case: removing the first node
-                        if current.next == from_vertex_node.adj_list:
-                            from_vertex_node.adj_list = None  # No more edges
-                        else:
-                            # Find the last node to update the circular link
-                            temp = from_vertex_node.adj_list
-                            while temp.next != from_vertex_node.adj_list:
-                                temp = temp.next
-                            temp.next = current.next
-                            from_vertex_node.adj_list = current.next
-                    print(f"Edge from {from_vertex} to {to_vertex} removed.")
+    def delEdge(self, s, t):
+        """حذف یال از گره s به گره t از گراف جهت‌دار و وزن‌دار."""
+        if 0 <= s < self.n and 0 <= t < self.n:  # بررسی اینکه گره‌ها در محدوده باشند
+            current = self.adj_list[s]
+            if current is None:
+                return  # اگر گره s هیچ همسایه‌ای نداشته باشد، کاری انجام نمی‌دهیم
+            prev = None
+            # پیمایش لیست پیوندی تا گره مورد نظر پیدا شود
+            while current.data != t:
+                prev = current
+                current = current.next
+                if current == self.adj_list[s]:  # به حلقه رسیدیم و یال پیدا نشد
                     return
-                previous = current
-                current = current.next
-                if current == from_vertex_node.adj_list:
-                    break
-            print(f"Edge from {from_vertex} to {to_vertex} not found.")
-        else:
-            print("Vertex index out of bounds.")
-
-    def get_weight(self, from_vertex, to_vertex):
-        if 0 <= from_vertex < self.num_vertices and 0 <= to_vertex < self.num_vertices:
-            from_vertex_node = self.vertices[from_vertex]
-            current = from_vertex_node.adj_list
-
-            # Traverse the circular linked list to find the weight
-            while current:
-                if current.vertex == to_vertex:
-                    return current.weight
-                current = current.next
-                if current == from_vertex_node.adj_list:
-                    break
-            print(f"Edge from {from_vertex} to {to_vertex} not found.")
-            return None
-        else:
-            print("Vertex index out of bounds.")
-            return None
-
-    def display_graph(self):
-        # Display each vertex and its adjacency list
-        for vertex in self.vertices:
-            print(f"Vertex {vertex.vertex}:", end=" ")
-            if vertex.adj_list:
-                current = vertex.adj_list
-                while True:
-                    print(f"({current.vertex}, {current.weight})", end=" -> ")
-                    current = current.next
-                    if current == vertex.adj_list:
-                        break
-                print("Back to start")
+            if prev is None:
+                # اگر گره اول باشد (همسایه اول)
+                if current.next == self.adj_list[s]:
+                    # اگر فقط یک گره وجود داشته باشد
+                    self.adj_list[s] = None
+                else:
+                    # اگر چند گره در لیست باشند
+                    last = self.adj_list[s]
+                    while last.next != self.adj_list[s]:  # پیدا کردن آخرین گره
+                        last = last.next
+                    self.adj_list[s] = current.next
+                    last.next = self.adj_list[s]
             else:
-                print("No edges.")
+                prev.next = current.next  # حذف یال از لیست پیوندی
+
+    def bfs(self, start):
+        """جستجوی عرضی (BFS) از گره start."""
+        visited = [False] * self.n  # آرایه visited برای پیگیری گره‌های بازدید شده
+        queue = [start]  # صف برای مدیریت گره‌ها
+        visited[start] = True  # علامت‌گذاری گره شروع به عنوان بازدید شده
+        print("مسیر BFS:", end=" ")
+
+        # اجرای الگوریتم BFS
+        while queue:
+            node = queue.pop(0)  # خارج کردن گره اول صف
+            print(node, end=" ")  # نمایش گره فعلی
+            current = self.adj_list[node]
+            if current:  # اگر گره همسایگان دارد
+                while True:
+                    if not visited[current.data]:  # اگر گره همسایه بازدید نشده باشد
+                        visited[current.data] = True  # علامت‌گذاری به عنوان بازدید شده
+                        queue.append(current.data)  # افزودن گره همسایه به صف
+                    current = current.next
+                    if current == self.adj_list[node]:  # بازگشت به گره شروع (حلقوی)
+                        break
+        print()  # برای چاپ در خط جدید
+
+    def dfs(self, start, visited=None):
+        """جستجوی عمقی (DFS) از گره start."""
+        if visited is None:
+            visited = [False] * self.n  # آرایه visited برای پیگیری گره‌های بازدید شده
+        visited[start] = True  # علامت‌گذاری گره شروع به عنوان بازدید شده
+        print(start, end=" ")  # نمایش گره فعلی
+
+        # پیمایش همسایگان و فراخوانی بازگشتی برای هر همسایه
+        current = self.adj_list[start]
+        while current:
+            if not visited[current.data]:  # اگر گره همسایه بازدید نشده باشد
+                self.dfs(current.data, visited)  # فراخوانی بازگشتی برای گره همسایه
+            current = current.next
+            if current == self.adj_list[start]:  # بازگشت به گره شروع (حلقوی)
+                break
+
+    def display(self):
+        """نمایش گراف به صورت لیست‌های پیوندی حلقوی."""
+        print("لیست‌های پیوندی حلقوی گراف:")
+        # نمایش لیست پیوندی برای هر گره
+        for i in range(self.n):
+            current = self.adj_list[i]
+            neighbors = []
+            if current:
+                while True:
+                    neighbors.append(f"{current.data} (وزن: {current.weight})")
+                    current = current.next
+                    if current == self.adj_list[i]:  # به حلقه رسیدیم
+                        break
+            print(f"گره {i}: {', '.join(neighbors) if neighbors else 'هیچ یالی ندارد'}")
+
 
 ################################################################################################################################################
