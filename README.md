@@ -11,5 +11,5 @@
 
 ### با تشکر از تیم پژوهشی تورینگ  <img src="https://github.com/kourosh07/kourosh07/blob/main/turing%20(1)_prev_ui.png" alt="turinglogo" border="0" align="center" width="120px">
 
-### Best regards  :rose::heart:
+### پیروز و سربلند باشید  :rose::heart:
 
