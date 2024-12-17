@@ -1302,80 +1302,69 @@ def createTree(A):
 
 class MaxHeap:
     def __init__(self):
-        self.heap = []  # برای ذخیره عناصر
+        self.list = []  # ایجاد یک لیست برای ذخیره عناصر هیپ
 
-    def parent(self, i):
-        return (i - 1) // 2
+    def insert(self, x):
+        """افزودن عنصر به هیپ."""
+        self.list.append(x)  # افزودن عنصر به انتهای لیست
+        self.Heapifydu(len(self.list) - 1)  # متعادل کردن هیپ به سمت بالا
 
-    def left(self, i):
-        return 2 * i + 1
+    def Heapifydu(self, n):
+        """متعادل کردن هیپ به سمت بالا."""
+        p = (n - 1) // 2  # محاسبه اندیس والد
+        if p != n:  # چک کردن اینکه والد با خود عنصر متفاوت باشد
+            if self.list[n] > self.list[p]:  # اگر مقدار عنصر بزرگ‌تر از والد باشد
+                self.list[n], self.list[p] = self.list[p], self.list[n]  # جابجایی عنصر با والد
+                self.Heapifydu(p)  # ادامه متعادل‌سازی از موقعیت والد
 
-    def right(self, i):
-        return 2 * i + 2
+    def Heapifyud(self, n):
+        """متعادل کردن هیپ به سمت پایین."""
+        e = 2 * n + 1  # محاسبه اندیس فرزند چپ
+        r = 2 * n + 2  # محاسبه اندیس فرزند راست
+        if e < len(self.list):  # بررسی اینکه فرزند چپ در محدوده باشد
+            if r < len(self.list):  # بررسی اینکه فرزند راست در محدوده باشد
+                if self.list[n] < self.list[e] and self.list[r] < self.list[e]:  # چک کردن بزرگ‌ترین فرزند
+                    self.list[e], self.list[n] = self.list[n], self.list[e]  # جابجایی با فرزند چپ
+                    self.Heapifyud(e)  # ادامه متعادل‌سازی از موقعیت فرزند چپ
+                elif self.list[n] < self.list[r] and self.list[r] > self.list[e]:  # بررسی فرزند راست
+                    self.list[r], self.list[n] = self.list[n], self.list[r]  # جابجایی با فرزند راست
+                    self.Heapifyud(r)  # ادامه متعادل‌سازی از موقعیت فرزند راست
+                else:
+                    return  # اگر نیازی به جابجایی نبود
+            else:
+                if self.list[e] > self.list[n]:  # بررسی تنها فرزند چپ
+                    self.list[n], self.list[e] = self.list[e], self.list[n]  # جابجایی با فرزند چپ
+                    return
+                else:
+                    return
 
-    def heapify_down_up(self, index):
-        """Restore the heap property by moving the element at `index` upwards."""
-        parent = self.parent(index)
-        while index > 0 and self.heap[index] > self.heap[parent]:
-            self.heap[index], self.heap[parent] = self.heap[parent], self.heap[index]
-            index = parent
-            parent = self.parent(index)
-
-    def heapify_up_down(self, index):
-        """Restore the heap property by moving the element at `index` downwards."""
-        n = len(self.heap)
-        largest = index
-        left = self.left(index)
-        right = self.right(index)
-        if left < n and self.heap[left] > self.heap[largest]:
-            largest = left
-        if right < n and self.heap[right] > self.heap[largest]:
-            largest = right
-        if largest != index:
-            self.heap[index], self.heap[largest] = self.heap[largest], self.heap[index]
-            self.heapify_up_down(largest)
-
-    def insert(self, key):
-        self.heap.append(key)  
-        self.heapify_down_up(len(self.heap) - 1)  
-
-    def delete_root(self):
-        if len(self.heap) != 0:
-            root = self.heap[0]
-            self.heap[0] = self.heap[-1]
-            self.heap.pop()  
-            if self.heap:
-                self.heapify_up_down(0)
-            return root
-    
-    def delete(self, x):
-        if x in self.heap:
-            index = self.heap.index(x)
-            removed_element = self.heap[index]
-            self.heap[index] = self.heap[-1]
-            self.heap.pop()  
-
-            if index < len(self.heap):
-                self.heapify_up_down(index)
-                self.heapify_down_up(index)
-
-            return removed_element
+    def delRoot(self):
+        """حذف عنصر ریشه از هیپ."""
+        if len(self.list) == 0:  # اگر هیپ خالی باشد
+            return
+        if len(self.list) == 1:  # اگر هیپ تنها یک عنصر داشته باشد
+            self.list.pop()  # حذف تنها عنصر موجود
+            return
+        e = len(self.list) - 1  # محاسبه اندیس آخرین عنصر
+        self.list[e], self.list[0] = self.list[0], self.list[e]  # جابجایی ریشه با آخرین عنصر
+        self.list.pop()  # حذف آخرین عنصر که اکنون ریشه است
+        self.Heapifyud(0)  # متعادل‌سازی هیپ به سمت پایین از ریشه
 
     def display(self):
-        print(self.heap)
+        """نمایش عناصر هیپ."""
+        print("عناصر هیپ:", self.list)
 
-# مرتب سازی
-def heap_sort(elements):
-    heap = MaxHeap()
-
-    for element in elements:
-        heap.insert(element)
-
-    sorted_list = []
-    while heap.heap:
-        sorted_list.append(heap.delete_root())
-
-    return sorted_list[::-1]
+    def delete(self, value):
+        """حذف عنصر مشخص شده از هیپ."""
+        try:
+            index = self.list.index(value)  # پیدا کردن اندیس عنصر
+            self.list[index] = self.list[-1]  # جایگزینی عنصر با آخرین عنصر
+            self.list.pop()  # حذف آخرین عنصر
+            if index < len(self.list):
+                self.Heapifyud(index)  # متعادل‌سازی به سمت پایین
+                self.Heapifydu(index)  # متعادل‌سازی به سمت بالا
+        except ValueError:
+            print(f"مقدار {value} در هیپ پیدا نشد.")
 
 ################################################################################################################################################
 
@@ -1383,31 +1372,69 @@ def heap_sort(elements):
 
 class MinHeap:
     def __init__(self):
-        self.heap = []
+        self.list = []  # ایجاد یک لیست برای ذخیره عناصر هیپ
 
-    def insert(self, key):
-        self.heap.append(key)
-        self.heapify_up(len(self.heap) - 1)
+    def insert(self, x):
+        """افزودن عنصر به هیپ."""
+        self.list.append(x)  # افزودن عنصر به انتهای لیست
+        self.Heapifydu(len(self.list) - 1)  # متعادل کردن هیپ به سمت بالا
 
-    def heapify_up(self, index):
-        parent = (index - 1) // 2
-        while index > 0 and self.heap[index] < self.heap[parent]:
-            self.heap[index], self.heap[parent] = self.heap[parent], self.heap[index]
-            index = parent
-            parent = (index - 1) // 2
+    def Heapifydu(self, n):
+        """متعادل کردن هیپ به سمت بالا."""
+        p = (n - 1) // 2  # محاسبه اندیس والد
+        if p != n:  # چک کردن اینکه والد با خود عنصر متفاوت باشد
+            if self.list[n] < self.list[p]:  # اگر مقدار عنصر کوچک‌تر از والد باشد
+                self.list[n], self.list[p] = self.list[p], self.list[n]  # جابجایی عنصر با والد
+                self.Heapifydu(p)  # ادامه متعادل‌سازی از موقعیت والد
 
-# تبدیل کردن
-def maxheap_to_minheap(max_heap):
-    min_heap = MinHeap()
-    for element in max_heap.heap:
-        min_heap.insert(element)
-    return min_heap.heap
+    def Heapifyud(self, n):
+        """متعادل کردن هیپ به سمت پایین."""
+        e = 2 * n + 1  # محاسبه اندیس فرزند چپ
+        r = 2 * n + 2  # محاسبه اندیس فرزند راست
+        if e < len(self.list):  # بررسی اینکه فرزند چپ در محدوده باشد
+            if r < len(self.list):  # بررسی اینکه فرزند راست در محدوده باشد
+                if self.list[n] > self.list[e] and self.list[r] > self.list[e]:  # چک کردن کوچک‌ترین فرزند
+                    self.list[e], self.list[n] = self.list[n], self.list[e]  # جابجایی با فرزند چپ
+                    self.Heapifyud(e)  # ادامه متعادل‌سازی از موقعیت فرزند چپ
+                elif self.list[n] > self.list[r] and self.list[r] < self.list[e]:  # بررسی فرزند راست
+                    self.list[r], self.list[n] = self.list[n], self.list[r]  # جابجایی با فرزند راست
+                    self.Heapifyud(r)  # ادامه متعادل‌سازی از موقعیت فرزند راست
+                else:
+                    return  # اگر نیازی به جابجایی نبود
+            else:
+                if self.list[e] < self.list[n]:  # بررسی تنها فرزند چپ
+                    self.list[n], self.list[e] = self.list[e], self.list[n]  # جابجایی با فرزند چپ
+                    return
+                else:
+                    return
 
-def make_max_heap(list):
-    result = MaxHeap()
-    for i in list:
-        result.insert(i)
-    return result.heap
+    def delRoot(self):
+        """حذف عنصر ریشه از هیپ."""
+        if len(self.list) == 0:  # اگر هیپ خالی باشد
+            return
+        if len(self.list) == 1:  # اگر هیپ تنها یک عنصر داشته باشد
+            self.list.pop()  # حذف تنها عنصر موجود
+            return
+        e = len(self.list) - 1  # محاسبه اندیس آخرین عنصر
+        self.list[e], self.list[0] = self.list[0], self.list[e]  # جابجایی ریشه با آخرین عنصر
+        self.list.pop()  # حذف آخرین عنصر که اکنون ریشه است
+        self.Heapifyud(0)  # متعادل‌سازی هیپ به سمت پایین از ریشه
+
+    def display(self):
+        """نمایش عناصر هیپ."""
+        print("عناصر هیپ:", self.list)
+
+    def delete(self, value):
+        """حذف عنصر مشخص شده از هیپ."""
+        try:
+            index = self.list.index(value)  # پیدا کردن اندیس عنصر
+            self.list[index] = self.list[-1]  # جایگزینی عنصر با آخرین عنصر
+            self.list.pop()  # حذف آخرین عنصر
+            if index < len(self.list):
+                self.Heapifyud(index)  # متعادل‌سازی به سمت پایین
+                self.Heapifydu(index)  # متعادل‌سازی به سمت بالا
+        except ValueError:
+            print(f"مقدار {value} در هیپ پیدا نشد.")
 
 ################################################################################################################################################
 
