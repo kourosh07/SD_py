@@ -911,6 +911,7 @@ class dLinkedList:
             temp.back.next = temp.next
             temp.next.back = temp.back
             del(temp)
+            
     def show(self):
         if self.head is None:
             print("empty")
