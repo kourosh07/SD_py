@@ -1548,21 +1548,50 @@ class GraphD:  # گراف جهت دار
 
 # کلاس گراف وزن دار
 
-class WGraph:
-    def __init__(self, vertices):
-        self.vertices = vertices
-        self.graph = [[0] * vertices for _ in range(vertices)]
+class GraphW:  # گراف وزن دار
+    def __init__(self, n):
+        self.M = [[0] * n for _ in range(n)]  # ایجاد ماتریس n*n برای نگهداری گراف وزن دار
 
-    def add_edge(self, u, v, weight):
-        self.graph[u][v] = weight
-        self.graph[v][u] = weight  # For undirected graph
+    def insertEdge(self, s, t, w):
+        """افزودن یال وزن دار به گراف."""
+        if s < len(self.M[0]) and t < len(self.M[0]):  # بررسی اینکه ایندکس‌ها معتبر هستند
+            self.M[s][t] = w  # قرار دادن وزن یال در خانه مربوطه
 
-    def print_graph(self):
-        print("Adjacency matrix: ")
-        for row in self.graph:
-            for column in row:
-                print(f"{column:^3}", end=' ')
-            print()
+    def delEdge(self, s, t):
+        """حذف یال از گراف وزن دار."""
+        if s < len(self.M[0]) and t < len(self.M[0]):  # بررسی اینکه ایندکس‌ها معتبر هستند
+            self.M[s][t] = 0  # حذف یال از گره s به گره t
+            self.M[t][s] = 0  # حذف یال از گره t به گره s (برای گراف غیرجهت‌دار)
+
+    def bfs(self, start):
+        """جستجوی عرضی (BFS) در گراف وزن دار."""
+        visited = [False] * len(self.M)  # لیستی برای نشان دادن بازدید شدن گره‌ها
+        queue = [start]  # صف برای ذخیره گره‌ها در طی جستجو
+        visited[start] = True  # علامت‌گذاری گره شروع به عنوان بازدید شده
+        print("مسیر BFS:", end=" ")  # نمایش عنوان مسیر
+        while queue:  # تا زمانی که صف خالی نباشد
+            node = queue.pop(0)  # گره اول صف را بردار
+            print(node, end=" ")  # نمایش گره فعلی
+            for i in range(len(self.M[node])):  # بررسی تمام گره‌های متصل به گره فعلی
+                if self.M[node][i] > 0 and not visited[i]:  # اگر وزن یال مثبت باشد و گره هنوز بازدید نشده باشد
+                    queue.append(i)  # افزودن گره به صف
+                    visited[i] = True  # علامت‌گذاری گره به عنوان بازدید شده
+        print()  # خط جدید پس از اتمام جستجو
+
+    def dfs(self, start):
+        """جستجوی عمقی (DFS) در گراف وزن دار."""
+        print(start, end=" ")  # نمایش گره فعلی
+        # تغییر مقدار گره به 2 برای نشان دادن اینکه بازدید شده
+        self.M[start][start] = 2
+        for i in range(len(self.M[start])):  # بررسی تمام گره‌های متصل به گره فعلی
+            if self.M[start][i] > 0 and self.M[i][i] != 2:  # اگر وزن یال مثبت باشد و گره هنوز بازدید نشده باشد
+                self.dfs(i)  # فراخوانی تابع DFS برای گره بعدی
+
+    def display(self):
+        """نمایش گراف به صورت ماتریس adjacency (وزن‌دار)."""
+        print("ماتریس گراف وزن دار:")
+        for row in self.M:
+            print(row)
 
 ################################################################################################################################################
 
