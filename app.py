@@ -1075,212 +1075,6 @@ class CdLinekd_list:
 
 # کلاس درخت باینری
 
-class BinaryNode:
-    def __init__(self, data):
-        self.data = data
-        self.Lchild = None
-        self.Rchild = None
-
-class BinaryTree:
-    def __init__(self):
-        self.root = None
-
-    def insert_left(self, data):
-        a = BinaryNode(data)
-        if self.root is None:
-            self.root = a
-        else:
-            temp = self.root
-            while temp.Lchild != None:
-                temp = temp.Lchild
-            temp.Lchild = a
-    
-    def insert_right(self, data):
-        a = BinaryNode(data)
-        if self.root is None:
-            self.root = a
-        else:
-            temp = self.root
-            while temp.Rchild != None:
-                temp = temp.Rchild
-            temp.Rchild = a
-
-    def preorder(self):
-        self.ppreorder(self.root)  
-
-    def ppreorder(self, node):
-        if node:
-            print(node.data, end=" ")
-            self.ppreorder(node.Lchild)
-            self.ppreorder(node.Rchild)
-    
-    def inorder(self):
-        self.pinorder(self.root)
-
-    def pinorder(self, node):
-        if node:
-            self.pinorder(node.Lchild)
-            print(node.data, end=" ")
-            self.pinorder(node.Rchild)
-    
-    def postorder(self):
-        self.ppostorder(self.root)
-
-    def ppostorder(self, node):
-        if node:
-            self.ppostorder(node.Lchild)
-            self.ppostorder(node.Rchild)
-            print(node.data, end=" ")
-    
-    def level_order(self):
-        if self.root is None:
-            return
-        l = list()
-        l.append(self.root)
-        while l:
-            t = l.pop(0)
-            print(t.data, end=" ")
-            if t.Lchild:
-                l.append(t.Lchild)
-            if t.Rchild:
-                l.append(t.Rchild)
-    
-    def insert_after_l(self, x, data):
-        self.pinsert_after_l(self.root, x, data)
-
-    def pinsert_after_l(self, node, x, data):
-        if node:
-            if node.data == x:
-                temp = node.Lchild
-                node.Lchild = BinaryNode(data)
-                node.Lchild.Lchild = temp
-            self.pinsert_after_l(node.Lchild, x, data)
-            self.pinsert_after_l(node.Rchild, x, data)
-
-    def insert_after_r(self, x, data):
-        self.pinsert_after_r(self.root, x, data)
-
-    def pinsert_after_r(self, node, x, data):
-        if node:
-            if node.data == x:
-                temp = node.Rchild
-                node.Rchild = BinaryNode(data)
-                node.Rchild.Rchild = temp
-            self.pinsert_after_r(node.Lchild, x, data)    
-            self.pinsert_after_r(node.Rchild, x, data)
-        
-    def delete_left(self):
-        if self.root is None:
-            print('empty')
-            return None
-        else:
-            temp = self.root
-            while temp.Lchild.Lchild != None:
-                temp = temp.Lchild
-            del(temp.Lchild)
-            temp.Lchild = None
-
-    def delete_right(self):
-        if self.root is None:
-            print("empty")
-            return None
-        else:
-            temp = self.root
-            while temp.Rchild.Rchild != None:
-                temp = temp.Rchild
-            del(temp.Rchild)
-            temp.Rchild = None
-            
-    def delete_x(self, x):
-        if self.root is None:
-            print('empty')
-            return None
-        else:
-            self.pdelete(self.root, x)   
-
-    def pdelete(self, node, x):
-        if node != None:
-            if node.Lchild:
-                if node.Lchild.data == x:
-                    del(node.Lchild)
-                    node.Lchild = None
-                    return None
-                self.pdelete(node.Lchild, x)
-                self.pdelete(node.Rchild, x)           
-            if node.Rchild:
-                if node.Rchild.data == x:
-                    del(node.Rchild)
-                    node.Rchild = None
-                    return None
-                self.pdelete(node.Lchild, x)
-                self.pdelete(node.Rchild, x)
-            if node.data == x:
-                node = None
-                return
-        
-    def delete_left_x(self, x):
-        if self.root is None:
-            print('empty')
-            return
-        else:
-            self.pdelete_left_x(self.root, x)
-
-    def pdelete_left_x(self, node, x):
-        if node != None:
-            if node.Lchild:
-                if node.Lchild.data == x:
-                    if node.Lchild.Lchild != None:
-                        del(node.Lchild.Lchild)
-                        node.Lchild.Lchild = None
-                        return
-                self.pdelete_left_x(node.Lchild, x)
-                self.pdelete_left_x(node.Rchild, x)
-            if node.Rchild:
-                if node.Rchild.data == x:
-                    if node.Rchild.Lchild != None:
-                        del(node.Rchild.Lchild)
-                        node.Rchild.Lchild = None
-                        return
-                self.pdelete_left_x(node.Lchild, x)
-                self.pdelete_left_x(node.Rchild, x)
-            if node.data == x:
-                if node.Lchild != None:
-                    node.Lchild = None
-                    return 
-                
-    def delete_right_x(self, x):
-        if self.root is None:
-            print("empty")
-        else:
-            return self.pdelete_right_x(self.root, x)
-        
-    def pdelete_right_x(self, node, x):
-        if node != None:
-            if node.Lchild:
-                if node.Lchild.data == x:
-                    if node.Lchild.Rchild != None:
-                        del(node.Lchild.Rchild)
-                        node.Lchild.Rchild = None
-                        return
-                self.pdelete_right_x(node.Lchild, x)
-                self.pdelete_right_x(node.Rchild, x)
-            if node.Rchild:
-                if node.Rchild.data == x:
-                    if node.Rchild.Rchild != None:
-                        del(node.Rchild.Rchild)
-                        node.Rchild.Rchild = None
-                        return
-                self.pdelete_right_x(node.Lchild, x)
-                self.pdelete_right_x(node.Rchild, x)
-            if node.data == x:
-                if node.Rchild != None:
-                    node.Rchild = None
-                    return
-
-################################################################################################################################################
-
-# کلاس جستجوی درخت باینری
-
 class bnode:
     def __init__(self,d):
         self.Lchild = None
@@ -1311,6 +1105,7 @@ class btree:
 
     def displayNLR(self): # Node-Left-Right نمایش با ترتیب
         self.showNLR(self.root) #صدا زدن متد کمکی
+        
     def showNLR(self,root):
         if root: #شرط خالی نبودن
             print(root.data,end=" ") #چاپ ریشه
@@ -1324,6 +1119,7 @@ class btree:
 
     def displayLNR(self): #Left-Node-Right نمایش با ترتیب
         self.showLNR(self.root) #صدا زدن متد کمکی
+        
     def showLNR(self,root): #متد کمکی
         if root: #شرط خالی نبودن
             self.showLNR(root.Lchild) #تابع بازگشتی با در نظر گرفتن 
@@ -1337,6 +1133,7 @@ class btree:
 
     def displayLRN(self): #Left-Right_Node نمایش با ترتیب
         self.showLRN(self.root) #صدا زدن متد کمکی
+        
     def showLRN(self,node): #متد کمکی
         if node: #شرط خالی نبودن
             self.showLRN(node.Lchild) #تابع بازگشتی با در نظر گرفتن 
@@ -1364,6 +1161,7 @@ class btree:
 
     def insAfterL(self,x,d): #افزودن فرزند چپ به نود مورد نظر
         self.pinsAfterL(self.root,x,d) # صدا زدن متد کمکی
+        
     def pinsAfterL(self,node,x,d): #متد کمکی
         if node: #شرط خالی نبودن
             if node.data == x: #تطابق نود فعلی با نود مورد نظر
@@ -1375,6 +1173,7 @@ class btree:
 
     def insAfterR(self,x,d): #افزودن فرزند راست  به نود مورد نظر
         self.pinsAfterR(self.root,x,d) # صدا زدن متد کمکی
+        
     def pinsAfterR(self,node,x,d): #متد کمکی
         if node: #شرط خالی نبودن
             if node.data == x: #تطابق نود فعلی با نود مورد نظر
@@ -1418,6 +1217,7 @@ class btree:
 
     def delete(self,x): #حذف کل درخت
         self.predel(self.root , x) #صدا زدن متد کمکی
+        
     def predel(self,node,x):
         if node is None: #شرط خالی بودن
             return
@@ -1425,6 +1225,76 @@ class btree:
             self.root = None #حذف ریشه
             del node
             return
+
+################################################################################################################################################
+
+# کلاس جستجوی درخت باینری
+
+class bnode:
+    def __init__(self,d):
+        self.Lchild = None
+        self.data = d
+        self.Rchild = None
+
+class BST:
+    def __init__(self):
+        self.root = None
+        self.list = []
+
+    def add(self , x):
+        if self.root is None: #empty
+            self.root = bnode(x)
+            self.list.append(x)
+        else:
+            self.padd(self.root , x) #صدا زدن متد کمکی
+    def padd(self , root , x):
+        if x > root: #اگر دیتای جدید از ریشه بزرگتر باشد
+            if root.Rchild == None: #چک کردن فرزند راست
+                root.Rchild = bnode(x)
+                self.list.append(x)
+
+            else:
+                self.padd(root.Rchild,x) #اگر پدر فرزند راست داشته باشد بوسیله
+                                         #تابع بازگشتی فرزند راستش به عنوان ریشه در 
+                                         # نظر گرفته میشود و شروط دوباره چک مبشوند
+
+        if x < root: #اگر دیتای جدید از ریشه کوچکتر باشد
+            if root.Lchild is None: #چک کردن فرزند راست
+                root.Lchild = bnode(x)
+                self.list.append(x) 
+
+            else:
+                self.padd(root.Lchild,x)#اگر پدر فرزند چپ داشته باشد بوسیله
+                                         #تابع بازگشتی فرزند چپش به عنوان ریشه در 
+                                         # نظر گرفته میشود و شروط دوباره چک مبشوند
+        return
+    
+    
+    def show(self):
+        return self.pshow(self.root) #صدا زدن متد کمکی
+    def pshow(self,root):
+        if root: #شرط خالی نبودن
+            self.pshow(root.Rchild) #تابع بازگشتی با ورودی فرزند راست به عنوان ریشه
+            print(root.data, end=' ')#چاپ ریشه فعلی
+            self.pshow(root.Lchild) #تابع بازگشتی با ورودی فرزند چپ به عنوان ریشه
+        return
+    
+
+#  کوییز
+# تابعی بنویسید که یک
+# BST
+# را از ورودی گرفته و لیست مربوط به آن را بازگرداند
+def CreateList(Tree):
+    print(Tree.list)
+
+
+# کوییز
+# برعکس تابع قبل
+def createTree(A):
+    Tree = BST()
+    for i in A:
+        Tree.add(i)
+    return Tree
 
 ################################################################################################################################################
 
