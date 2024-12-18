@@ -589,6 +589,14 @@ def Hannoi(n, A, B, C):
         Hannoi(n-1, A, C, B)
         print(A, 'to', C)
         Hannoi(n-1, B, A, C)
+
+# palidrome
+def palindrome( string ):
+    if len(string) <= 1 :
+        return True
+    if string[0] != string[-1]:
+        return False
+    return palindrome (string[1:-1])
         
 ################################################################################################################################################
 
