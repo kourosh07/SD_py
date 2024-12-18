@@ -1344,7 +1344,7 @@ class BST:
         else:
             self.padd(self.root , x) #صدا زدن متد کمکی
     def padd(self , root , x):
-        if x > root: #اگر دیتای جدید از ریشه بزرگتر باشد
+        if x > root.data: #اگر دیتای جدید از ریشه بزرگتر باشد
             if root.Rchild == None: #چک کردن فرزند راست
                 root.Rchild = bnode(x)
                 self.list.append(x)
@@ -1354,7 +1354,7 @@ class BST:
                                          #تابع بازگشتی فرزند راستش به عنوان ریشه در 
                                          # نظر گرفته میشود و شروط دوباره چک مبشوند
 
-        if x < root: #اگر دیتای جدید از ریشه کوچکتر باشد
+        if x < root.data: #اگر دیتای جدید از ریشه کوچکتر باشد
             if root.Lchild is None: #چک کردن فرزند راست
                 root.Lchild = bnode(x)
                 self.list.append(x) 
