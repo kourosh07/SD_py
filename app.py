@@ -1294,16 +1294,33 @@ class btree:
         temp.Rchild = None #حذف راست ترین نود
         del temp1
 
-    def delete(self,x): #حذف کل درخت
-        self.predel(self.root , x) #صدا زدن متد کمکی
-        
-    def predel(self,node,x):
-        if node is None: #شرط خالی بودن
-            return
-        if node.data == x: #تطابق داده با ریشه
-            self.root = None #حذف ریشه
-            del node
-            return
+     def delete_x(self, x):
+        if self.root is None:
+            print('empty')
+            return None
+        else:
+            self.pdelete(self.root, x)    
+    def pdelete(self, node, x):
+        if node != None:
+            if node.Lchild:
+                if node.Lchild.data == x:
+                    del(node.Lchild)
+                    node.Lchild = None
+                    return None
+                self.pdelete(node.Lchild, x)
+                self.pdelete(node.Rchild, x)
+            
+            if node.Rchild:
+                if node.Rchild.data == x:
+                    del(node.Rchild)
+                    node.Rchild = None
+                    return None
+                self.pdelete(node.Lchild, x)
+                self.pdelete(node.Rchild, x)
+            
+            if node.data == x:
+                node = None
+                return
 
 ################################################################################################################################################
 
