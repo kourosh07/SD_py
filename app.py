@@ -1479,7 +1479,7 @@ class MinHeap:
         """متعادل کردن هیپ به سمت بالا."""
         p = (n - 1) // 2  # محاسبه اندیس والد
         if p != n:  # چک کردن اینکه والد با خود عنصر متفاوت باشد
-            if self.list[n] < self.list[p]:  # اگر مقدار عنصر کوچک‌تر از والد باشد
+            while n > 0 and self.list[n] < self.list[p]:
                 self.list[n], self.list[p] = self.list[p], self.list[n]  # جابجایی عنصر با والد
                 self.Heapifydu(p)  # ادامه متعادل‌سازی از موقعیت والد
 
